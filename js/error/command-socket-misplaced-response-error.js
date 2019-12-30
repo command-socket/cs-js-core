@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0});const command_socket_error_1=require("./command-socket-error");class CommandSocketMisplacedResponseError extends command_socket_error_1.CommandSocketError{constructor(){super("Received a CommandSocket response message that could not be matched to any outgoing request.","CommandSocketMisplacedResponseError")}}exports.CommandSocketMisplacedResponseError=CommandSocketMisplacedResponseError;
+//# sourceMappingURL=command-socket-misplaced-response-error.js.map

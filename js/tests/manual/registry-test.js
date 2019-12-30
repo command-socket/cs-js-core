@@ -1,0 +1,2 @@
+var __awaiter=this&&this.__awaiter||function(n,t,i,a){return new(i||(i=Promise))((function(e,o){function c(n){try{u(a.next(n))}catch(n){o(n)}}function r(n){try{u(a.throw(n))}catch(n){o(n)}}function u(n){var t;n.done?e(n.value):(t=n.value,t instanceof i?t:new i((function(n){n(t)}))).then(c,r)}u((a=a.apply(n,t||[])).next())}))};const main=()=>__awaiter(this,void 0,void 0,(function*(){}));main();
+//# sourceMappingURL=registry-test.js.map

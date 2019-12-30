@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0});const command_socket_error_1=require("./command-socket-error");class CommandSocketCommandNotFoundError extends command_socket_error_1.CommandSocketError{constructor(o){super("Attempted to call a command that does not exist in the command registry: '"+o+"'.","CommandSocketCommandNotFoundError")}}exports.CommandSocketCommandNotFoundError=CommandSocketCommandNotFoundError;
+//# sourceMappingURL=command-socket-command-not-found-error.js.map

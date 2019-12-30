@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0});const command_socket_error_1=require("./command-socket-error");class CommandSocketUnrequitedRequestError extends command_socket_error_1.CommandSocketError{constructor(){super("This request received no response from the connected CommandSocket before timing out.","CommandSocketUnrequitedRequestError")}}exports.CommandSocketUnrequitedRequestError=CommandSocketUnrequitedRequestError;
+//# sourceMappingURL=command-socket-unrequited-request-error.js.map

@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0});const command_socket_error_1=require("./command-socket-error");class CommandSocketMalformedMessageError extends command_socket_error_1.CommandSocketError{constructor(e="CommandSocket received a malformed message."){super(e,"CommandSocketMalformedMessageError")}}exports.CommandSocketMalformedMessageError=CommandSocketMalformedMessageError;
+//# sourceMappingURL=command-socket-malformed-message-error.js.map

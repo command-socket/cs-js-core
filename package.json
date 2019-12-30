@@ -1,0 +1,42 @@
+{
+	"name": "@command-socket/core",
+	"version": "0.1.0",
+	"description": "A command-based WebSocket communication framework written in TypeScript/JavaScript.",
+	"main": "js/main",
+	"types": ".d.ts/main",
+	"scripts": {
+		"build": "gulp rebuild",
+		"test": "gulp rebuild && jest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/command-socket/cs-js-core.git"
+	},
+	"keywords": [
+		"websocket",
+		"command"
+	],
+	"author": "Trevor Sears <trevorsears.main@gmail.com> (http://trevorsears.io/)",
+	"license": "GPL-3.0-or-later",
+	"bugs": {
+		"url": "https://github.com/command-socket/cs-js-core/issues"
+	},
+	"homepage": "https://github.com/command-socket/cs-js-core#readme",
+	"devDependencies": {
+		"@types/jest": "latest",
+		"del": "latest",
+		"gulp": "latest",
+		"gulp-sourcemaps": "latest",
+		"gulp-typescript": "latest",
+		"gulp-uglify-es": "latest",
+		"jest": "latest",
+		"ts-jest": "latest",
+		"tslint": "latest",
+		"typescript": "latest"
+	},
+	"dependencies": {
+		"avents": "^0.1.0",
+		"promise-any-polyfill": "^0.1.2",
+		"typit": "^0.6.4"
+	}
+}

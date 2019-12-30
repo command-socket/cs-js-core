@@ -1,0 +1,32 @@
+import { CommandSetStructure, FullCommandSet, CommandIn, ParamTypeFor, ReturnTypeFor } from "../schema/command-set-structure";
+import { CommandRegistry } from "../command/command-registry";
+import { CommandSocketRequestMessage, CommandSocketResponseMessage } from "../schema/message/command-socket-message";
+import { CommandSocketIdentity } from "../schema/command-socket-identity";
+import { BuiltinCommandSet } from "../builtin/builtin-command-set";
+import { ISocket } from "../socket/i-socket";
+import { CommandSocketEvents } from "./command-socket-events";
+import { CommandSocketState } from "./command-socket-state";
+export declare abstract class CommandSocket<LCS extends CommandSetStructure = any, RCS extends CommandSetStructure = any> {
+    static readonly ID_LENGTH: number;
+    private static readonly BUILTIN_COMMANDS;
+    private socket;
+    private state;
+    private id;
+    private commandRegistry;
+    private messageType;
+    private outstandingRequests;
+    private events;
+    constructor(socket: ISocket, commandRegistry?: CommandRegistry<FullCommandSet<LCS>>);
+    rawRequest<C extends CommandIn<RCS> = CommandIn<RCS>>(command: C, params?: ParamTypeFor<RCS, C>): Promise<CommandSocketResponseMessage>;
+    invoke<C extends CommandIn<RCS> = CommandIn<RCS>>(command: C, params?: ParamTypeFor<RCS, C>): Promise<ReturnTypeFor<RCS, C>>;
+    ping(): Promise<number>;
+    close(): Promise<void>;
+    protected handleMessage(data: any): void;
+    protected handleRequest(request: CommandSocketRequestMessage, timeReceived: number): Promise<void>;
+    protected handleResponse(response: CommandSocketResponseMessage, timeReceived: number): void;
+    getID(): string;
+    getCommandRegistry(): CommandRegistry<LCS & BuiltinCommandSet>;
+    getSocketIdentity(): Promise<CommandSocketIdentity>;
+    getState(): CommandSocketState;
+    getEvents(): CommandSocketEvents;
+}

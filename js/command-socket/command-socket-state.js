@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0});class CommandSocketState{constructor(t){this.usable=t}isUsable(){return this.usable}}exports.CommandSocketState=CommandSocketState,CommandSocketState.CONNECTING=new CommandSocketState(!1),CommandSocketState.OPEN=new CommandSocketState(!0),CommandSocketState.CLOSED=new CommandSocketState(!1);
+//# sourceMappingURL=command-socket-state.js.map
