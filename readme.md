@@ -52,9 +52,9 @@ import { CommandSocket } from "@command-socket/browser-client";
 // OR
 import { CommandSocket } from "@command-socket/node-client";
 
-const serverPort: number = 3849;
-const serverIP: string = "4.3.2.1";
-const wsAddress: string = "ws://" + serverIP + ":" + serverPort;
+let serverPort: number = 3849;
+let serverIP: string = "4.3.2.1";
+let wsAddress: string = "ws://" + serverIP + ":" + serverPort;
 
 let client: CommandSocket = new CommandSocket(wsAddress);
 ```
