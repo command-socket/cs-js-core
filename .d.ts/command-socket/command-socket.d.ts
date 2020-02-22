@@ -10,7 +10,7 @@ import { CommandStructureParameterType, CommandStructureReturnType } from "../sc
 export declare type FullCommandSet<CS extends CommandSetStructure> = CS & BuiltinCommandSet;
 declare type ParameterOf<CS extends CommandSetStructure, CN extends CommandNameInCommandSet<CS> = CommandNameInCommandSet<CS>> = CommandStructureParameterType<CommandStructureInCommandSet<CS, CN>>;
 declare type ReturnTypeOf<CS extends CommandSetStructure, CN extends CommandNameInCommandSet<CS> = CommandNameInCommandSet<CS>> = CommandStructureReturnType<CommandStructureInCommandSet<CS, CN>>;
-export declare abstract class CommandSocket<LCS extends CommandSetStructure = any, RCS extends CommandSetStructure = any> {
+export declare abstract class CommandSocket<LCS extends CommandSetStructure = any, RCS extends CommandSetStructure = any, M extends {} = {}> {
     static readonly ID_LENGTH: number;
     private static readonly BUILTIN_COMMANDS;
     private socket;
@@ -20,7 +20,8 @@ export declare abstract class CommandSocket<LCS extends CommandSetStructure = an
     private messageType;
     private outstandingRequests;
     private events;
-    constructor(socket: ISocket, commandRegistry?: CommandRegistry<LCS>);
+    private metadata;
+    constructor(socket: ISocket, commandRegistry?: CommandRegistry<LCS>, metadata?: Partial<M>);
     rawRequest<CommandName extends CommandNameInCommandSet<FullCommandSet<RCS>>>(command: CommandName, params: ParameterOf<FullCommandSet<RCS>, CommandName>): Promise<CommandSocketResponseMessage<CommandStructureInCommandSet<FullCommandSet<RCS>, CommandName>>>;
     invoke<CommandName extends CommandNameInCommandSet<FullCommandSet<RCS>>>(command: CommandName, params: ParameterOf<FullCommandSet<RCS>, CommandName>): Promise<ReturnTypeOf<FullCommandSet<RCS>, CommandName>>;
     ping(): Promise<number>;
@@ -29,6 +30,7 @@ export declare abstract class CommandSocket<LCS extends CommandSetStructure = an
     protected handleRequest(request: CommandSocketRequestMessage, timeReceived: number): Promise<void>;
     protected handleResponse(response: CommandSocketResponseMessage, timeReceived: number): void;
     getID(): string;
+    getMetadata(): Partial<M>;
     getCommandRegistry(): CommandRegistry<LCS & BuiltinCommandSet>;
     getSocketIdentity(): Promise<CommandSocketIdentity>;
     getState(): CommandSocketState;

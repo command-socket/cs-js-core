@@ -65,7 +65,7 @@ type ReturnTypeOf<CS extends CommandSetStructure, CN extends CommandNameInComman
 export abstract class CommandSocket<
 	LCS extends CommandSetStructure = any,
 	RCS extends CommandSetStructure = any,
-	M extends {} = {}> { // TODO [2/21/20 @ 2:56 PM] - Remove default generic types.
+	M extends {} = {}> {
 	
 	/**
 	 * The length of the ID generated for each new CommandSocket.
