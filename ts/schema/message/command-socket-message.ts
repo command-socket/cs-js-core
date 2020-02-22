@@ -5,6 +5,7 @@
  */
 
 import { CommandSocketIdentity } from "../command-socket-identity";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command-structure";
 
 export const CORRESPONDENCE_ID_LENGTH: number = 10;
 
@@ -15,7 +16,7 @@ export const CORRESPONDENCE_ID_LENGTH: number = 10;
  * @version v0.1.0
  * @since v0.1.0
  */
-export interface CommandSocketMessage<P = any, R = any> {
+export interface CommandSocketMessage<Command extends CommandStructure = any> {
 
 	readonly command: string;
 	
@@ -45,9 +46,9 @@ export interface CommandSocketMessage<P = any, R = any> {
 		
 	};
 	
-	readonly parameters: P | null;
+	readonly parameters: CommandStructureParameterType<Command> | null;
 	
-	readonly return: R | CommandSocketSerializedError | null;
+	readonly return: CommandStructureReturnType<Command> | CommandSocketSerializedError | null;
 
 }
 
@@ -59,7 +60,7 @@ export interface CommandSocketSerializedError {
 	
 }
 
-export interface CommandSocketRequestMessage<P = any, R = any> extends CommandSocketMessage<P, R> {
+export interface CommandSocketRequestMessage<Command extends CommandStructure = any> extends CommandSocketMessage<Command> {
 	
 	readonly command: string;
 	
@@ -89,13 +90,13 @@ export interface CommandSocketRequestMessage<P = any, R = any> extends CommandSo
 		
 	};
 	
-	readonly parameters: P;
+	readonly parameters: CommandStructureParameterType<Command>;
 	
 	readonly return: null;
 	
 }
 
-export interface CommandSocketResponseMessage<P = any, R = any> extends CommandSocketMessage<P, R> {
+export interface CommandSocketResponseMessage<Command extends CommandStructure = any> extends CommandSocketMessage<Command> {
 	
 	readonly command: string;
 	
@@ -125,8 +126,8 @@ export interface CommandSocketResponseMessage<P = any, R = any> extends CommandS
 		
 	};
 	
-	readonly parameters: P | null;
+	readonly parameters: CommandStructureParameterType<Command> | null;
 	
-	readonly return: R | CommandSocketSerializedError;
+	readonly return: CommandStructureReturnType<Command> | CommandSocketSerializedError;
 	
 }

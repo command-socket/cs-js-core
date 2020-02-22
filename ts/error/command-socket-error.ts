@@ -10,6 +10,7 @@ import {
 } from "../schema/message/command-socket-message";
 import { CommandSocketMessageFactory } from "../schema/message/command-socket-message-factory";
 import { CommandSocket } from "../command-socket/command-socket";
+import { CommandStructure } from "../schema/command-structure";
 
 /**
  * An {@link Error} stemming from any action around or related to the execution of a command or an attempt thereof.
@@ -28,8 +29,8 @@ export class CommandSocketError extends Error {
 	
 	}
 	
-	public async toMessage<P = any, R = any>(request: CommandSocketRequestMessage<P, R>,
-									   context: CommandSocket<any, any>): Promise<CommandSocketResponseMessage<P, R>> {
+	public async toMessage<C extends CommandStructure>(request: CommandSocketRequestMessage<C>,
+									   context: CommandSocket): Promise<CommandSocketResponseMessage<C>> {
 		
 		return await CommandSocketMessageFactory.createResponseMessage(request, this, context);
 		

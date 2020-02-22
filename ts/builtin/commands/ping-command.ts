@@ -4,7 +4,11 @@
  *	Project: CommandSocket - Core
  */
 
-import { CommandStructure } from "../../schema/command-structure";
+import {
+	CommandStructure,
+	CommandStructureParameterType,
+	CommandStructureReturnType
+} from "../../schema/command-structure";
 import { Command } from "../../command/command";
 import { CommandSocket } from "../../command-socket/command-socket";
 
@@ -15,7 +19,7 @@ import { CommandSocket } from "../../command-socket/command-socket";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class PingCommand implements Command<PingCommandStructure, "commandsocket ping"> {
+export class PingCommand implements Command<PingCommandStructure> {
 	
 	public getName(): "commandsocket ping" {
 		
@@ -23,8 +27,8 @@ export class PingCommand implements Command<PingCommandStructure, "commandsocket
 		
 	}
 	
-	public async execute(params: PingCommandStructure["params"],
-				   context: CommandSocket): Promise<PingCommandStructure["return"]> {
+	public async execute(params: CommandStructureParameterType<PingCommandStructure>,
+				   context: CommandSocket): Promise<CommandStructureReturnType<PingCommandStructure>> {
 		
 		return "Pong!";
 		
@@ -32,10 +36,5 @@ export class PingCommand implements Command<PingCommandStructure, "commandsocket
 	
 }
 
-export interface PingCommandStructure extends CommandStructure {
-	
-	params: "Ping!";
-	
-	return: "Pong!";
-	
-}
+export interface PingCommandStructure
+	extends CommandStructure<"Ping!", "Pong!", "commandsocket ping"> { }

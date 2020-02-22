@@ -1,6 +1,7 @@
 import { CommandSocketIdentity } from "../command-socket-identity";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command-structure";
 export declare const CORRESPONDENCE_ID_LENGTH: number;
-export interface CommandSocketMessage<P = any, R = any> {
+export interface CommandSocketMessage<Command extends CommandStructure = any> {
     readonly command: string;
     readonly meta: {
         readonly request: CommandSocketIdentity;
@@ -15,14 +16,14 @@ export interface CommandSocketMessage<P = any, R = any> {
         readonly correspondenceID: string;
         readonly didError: boolean;
     };
-    readonly parameters: P | null;
-    readonly return: R | CommandSocketSerializedError | null;
+    readonly parameters: CommandStructureParameterType<Command> | null;
+    readonly return: CommandStructureReturnType<Command> | CommandSocketSerializedError | null;
 }
 export interface CommandSocketSerializedError {
     readonly name: string;
     readonly message: string;
 }
-export interface CommandSocketRequestMessage<P = any, R = any> extends CommandSocketMessage<P, R> {
+export interface CommandSocketRequestMessage<Command extends CommandStructure = any> extends CommandSocketMessage<Command> {
     readonly command: string;
     readonly meta: {
         readonly request: CommandSocketIdentity;
@@ -37,10 +38,10 @@ export interface CommandSocketRequestMessage<P = any, R = any> extends CommandSo
         readonly correspondenceID: string;
         readonly didError: false;
     };
-    readonly parameters: P;
+    readonly parameters: CommandStructureParameterType<Command>;
     readonly return: null;
 }
-export interface CommandSocketResponseMessage<P = any, R = any> extends CommandSocketMessage<P, R> {
+export interface CommandSocketResponseMessage<Command extends CommandStructure = any> extends CommandSocketMessage<Command> {
     readonly command: string;
     readonly meta: {
         readonly request: CommandSocketIdentity;
@@ -55,6 +56,6 @@ export interface CommandSocketResponseMessage<P = any, R = any> extends CommandS
         readonly correspondenceID: string;
         readonly didError: boolean;
     };
-    readonly parameters: P | null;
-    readonly return: R | CommandSocketSerializedError;
+    readonly parameters: CommandStructureParameterType<Command> | null;
+    readonly return: CommandStructureReturnType<Command> | CommandSocketSerializedError;
 }

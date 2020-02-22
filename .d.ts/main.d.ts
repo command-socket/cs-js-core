@@ -1,6 +1,6 @@
-export { CommandSocket } from "./command-socket/command-socket";
+export { CommandSocket, FullCommandSet } from "./command-socket/command-socket";
 export { ISocket, SocketEvents } from "./socket/i-socket";
-export { CommandSetStructure, FullCommandSet, CommandIn, ParamTypeFor, ReturnTypeFor } from "./schema/command-set-structure";
+export { CommandSetStructure } from "./schema/command-set-structure";
 export { CommandStructure } from "./schema/command-structure";
 export { CommandSocketIdentity } from "./schema/command-socket-identity";
 export { CommandSocketMessage, CommandSocketResponseMessage, CommandSocketRequestMessage, CommandSocketSerializedError, CORRESPONDENCE_ID_LENGTH } from "./schema/message/command-socket-message";

@@ -4,7 +4,7 @@
  *	Project: @command-socket/core
  */
 
-import { CommandSetStructure } from "../../schema/command-set-structure";
+import { CommandSetStructure } from "../../../schema/command-set-structure";
 import { AddCommandStructure } from "./add-command";
 
 /**
@@ -17,5 +17,15 @@ import { AddCommandStructure } from "./add-command";
 export interface TestCommandSet extends CommandSetStructure {
 
 	add: AddCommandStructure;
+	
+	sum: {
+		
+		parameter: number[],
+		
+		return: number,
+		
+		name: "sum"
+		
+	};
 
 }

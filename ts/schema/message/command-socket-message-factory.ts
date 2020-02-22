@@ -13,6 +13,7 @@ import { CommandSocketIdentity } from "../command-socket-identity";
 import * as IDUtilities from "../../util/id-utilities";
 import { CommandSocketError } from "../../error/command-socket-error";
 import { CommandSocket } from "../../command-socket/command-socket";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command-structure";
 
 /**
  * A factory/utility class for creating new {@link CommandSocketMessage}s.
@@ -23,12 +24,12 @@ import { CommandSocket } from "../../command-socket/command-socket";
  */
 export class CommandSocketMessageFactory {
 	
-	public static async createRequestMessage<P = any, R = any>(
+	public static async createRequestMessage<Command extends CommandStructure>(
 		command: string,
-		parameters: P,
-		requestingCommandSocket: CommandSocket<any, any>,
+		parameters: CommandStructureParameterType<Command>,
+		requestingCommandSocket: CommandSocket,
 		timeSent: number = Date.now()
-		): Promise<CommandSocketRequestMessage<P, R>> {
+		): Promise<CommandSocketRequestMessage<Command>> {
 		
 		let { id, ip }: CommandSocketIdentity = await requestingCommandSocket.getSocketIdentity();
 		
@@ -70,16 +71,20 @@ export class CommandSocketMessageFactory {
 		
 	}
 	
-	public static async createResponseMessage<P = any, R = any>(
-		request: CommandSocketRequestMessage<P, R>, returnValue: R, respondingCommandSocket: CommandSocket<any, any>,
-		didError?: false, timestamp?: number): Promise<CommandSocketResponseMessage<P, R>>;
-	public static async createResponseMessage<P = any, R = any>(
-		request: CommandSocketRequestMessage<P, R>, error: CommandSocketError, respondingCommandSocket: CommandSocket,
-		didError?: true, timestamp?: number): Promise<CommandSocketResponseMessage<P, R>>;
-	public static async createResponseMessage<P = any, R = any>(
-		request: CommandSocketRequestMessage<P, R>, returnValueOrError: R | CommandSocketError,
-		respondingCommandSocket: CommandSocket, didError: boolean = false,
-		timeReceived: number = Date.now(), timeSent: number = Date.now()): Promise<CommandSocketResponseMessage<P, R>> {
+	public static async createResponseMessage<Command extends CommandStructure>(
+		request: CommandSocketRequestMessage<Command>, returnValue: CommandStructureReturnType<Command>,
+		respondingCommandSocket: CommandSocket, didError?: false, timestamp?: number):
+		Promise<CommandSocketResponseMessage<Command>>;
+	
+	public static async createResponseMessage<Command extends CommandStructure>(
+		request: CommandSocketRequestMessage<Command>, error: CommandSocketError, respondingCommandSocket: CommandSocket,
+		didError?: true, timestamp?: number): Promise<CommandSocketResponseMessage<Command>>;
+	
+	public static async createResponseMessage<Command extends CommandStructure>(
+		request: CommandSocketRequestMessage<Command>,
+		returnValueOrError: CommandStructureReturnType<Command> | CommandSocketError,
+		respondingCommandSocket: CommandSocket, didError: boolean = false, timeReceived: number = Date.now(),
+		timeSent: number = Date.now()): Promise<CommandSocketResponseMessage<Command>> {
 		
 		let { id, ip }: CommandSocketIdentity = await respondingCommandSocket.getSocketIdentity();
 		

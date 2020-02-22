@@ -1,11 +1,9 @@
-import { CommandStructure } from "../../schema/command-structure";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../../schema/command-structure";
 import { Command } from "../../command/command";
 import { CommandSocket } from "../../command-socket/command-socket";
-export declare class PingCommand implements Command<PingCommandStructure, "commandsocket ping"> {
+export declare class PingCommand implements Command<PingCommandStructure> {
     getName(): "commandsocket ping";
-    execute(params: PingCommandStructure["params"], context: CommandSocket): Promise<PingCommandStructure["return"]>;
+    execute(params: CommandStructureParameterType<PingCommandStructure>, context: CommandSocket): Promise<CommandStructureReturnType<PingCommandStructure>>;
 }
-export interface PingCommandStructure extends CommandStructure {
-    params: "Ping!";
-    return: "Pong!";
+export interface PingCommandStructure extends CommandStructure<"Ping!", "Pong!", "commandsocket ping"> {
 }

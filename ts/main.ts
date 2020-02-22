@@ -15,7 +15,7 @@
  */
 
 // Abstract CommandSocket implementation.
-export { CommandSocket } from "./command-socket/command-socket";
+export { CommandSocket, FullCommandSet } from "./command-socket/command-socket";
 
 // The generic socket interfaces to be implemented by each environment-specific implementation.
 export {
@@ -24,13 +24,7 @@ export {
 } from "./socket/i-socket";
 
 // Schema-related classes.
-export {
-	CommandSetStructure,
-	FullCommandSet,
-	CommandIn,
-	ParamTypeFor,
-	ReturnTypeFor
-} from "./schema/command-set-structure";
+export { CommandSetStructure } from "./schema/command-set-structure";
 export { CommandStructure } from "./schema/command-structure";
 export { CommandSocketIdentity } from "./schema/command-socket-identity";
 	

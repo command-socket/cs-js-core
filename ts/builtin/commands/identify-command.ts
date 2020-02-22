@@ -6,7 +6,11 @@
 
 import { Command } from "../../command/command";
 import { CommandSocket } from "../../command-socket/command-socket";
-import { CommandStructure } from "../../schema/command-structure";
+import {
+	CommandStructure,
+	CommandStructureParameterType,
+	CommandStructureReturnType
+} from "../../schema/command-structure";
 import { CommandSocketIdentity } from "../../schema/command-socket-identity";
 
 /**
@@ -16,7 +20,7 @@ import { CommandSocketIdentity } from "../../schema/command-socket-identity";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class IdentifyCommand implements Command<IdentifyCommandStructure, "commandsocket identify"> {
+export class IdentifyCommand implements Command<IdentifyCommandStructure> {
 	
 	public getName(): "commandsocket identify" {
 		
@@ -25,8 +29,8 @@ export class IdentifyCommand implements Command<IdentifyCommandStructure, "comma
 	}
 	
 	public async execute(
-		params: IdentifyCommandStructure["params"], context: CommandSocket):
-		Promise<IdentifyCommandStructure["return"]> {
+		params: CommandStructureParameterType<IdentifyCommandStructure>, context: CommandSocket):
+		Promise<CommandStructureReturnType<IdentifyCommandStructure>> {
 		
 		// TODO [11/1/19 @ 12:25 AM] - Add more information to this command's return value.
 		
@@ -36,10 +40,5 @@ export class IdentifyCommand implements Command<IdentifyCommandStructure, "comma
 	
 }
 
-export interface IdentifyCommandStructure extends CommandStructure {
-	
-	params: void;
-	
-	return: CommandSocketIdentity;
-	
-}
+export interface IdentifyCommandStructure
+	extends CommandStructure<void, CommandSocketIdentity, "commandsocket identify"> { }

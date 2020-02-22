@@ -4,8 +4,8 @@
  *	Project: @command-socket/core
  */
 
-import { CommandStructure as CSCommandStructure } from "./command-structure";
-import { BuiltinCommandSet } from "../builtin/builtin-command-set";
+import { CommandStructure } from "./command-structure";
+import { KnownKeys } from "../util/known-keys";
 
 /**
  * An interface representing a set of commands.
@@ -15,15 +15,22 @@ import { BuiltinCommandSet } from "../builtin/builtin-command-set";
  * @since v0.1.0
  */
 export interface CommandSetStructure {
-
-	[commandName: string]: CSCommandStructure;
+	
+	/**
+	 * Each key must be a string, representing the command name, with each associated value being a
+	 * {@link CommandStructure}.
+	 */
+	[commandName: string]: CommandStructure;
 
 }
 
-export type FullCommandSet<CS> = CS & BuiltinCommandSet;
+// export type CommandNameInCommandSet<CS extends CommandSetStructure> = IfAny<CS, string, keyof CS & KnownKeys<CS>>;
 
-export type CommandIn<CS extends CommandSetStructure> = keyof FullCommandSet<CS>;
+export type CommandNameInCommandSet<CS extends CommandSetStructure> = keyof CS & KnownKeys<CS>;
 
-export type ParamTypeFor<CS extends CommandSetStructure, C extends keyof CS> = FullCommandSet<CS>[C]["params"];
+export type CommandInCommandSet<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> = CS[CN];
 
-export type ReturnTypeFor<CS extends CommandSetStructure, C extends keyof CS> = FullCommandSet<CS>[C]["return"];
+export type CommandSetWithCommand<C extends CommandStructure> =
+	C extends CommandStructure<infer P, infer R, infer N> ?
+		Record<N, C> :
+		never;

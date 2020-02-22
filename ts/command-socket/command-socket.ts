@@ -6,13 +6,7 @@
 
 import { ObjectType } from "typit";
 import * as IDUtilities from "../util/id-utilities";
-import {
-	CommandSetStructure,
-	FullCommandSet,
-	CommandIn,
-	ParamTypeFor,
-	ReturnTypeFor
-} from "../schema/command-set-structure";
+import { CommandInCommandSet, CommandNameInCommandSet, CommandSetStructure } from "../schema/command-set-structure";
 import { CommandRegistry } from "../command/command-registry";
 import { MessageDefinition } from "../schema/typing/message-definition";
 import {
@@ -35,60 +29,85 @@ import { CommandSocketState } from "./command-socket-state";
 import { TimedResponseCommand } from "../builtin/commands/debug/timed-response-command";
 import { Command } from "../command/command";
 import { CommandSocketUnrequitedRequestError } from "../error/command-socket-unrequited-request-error";
+import { IfAny } from "../util/any-types";
+import { CommandStructureParameterType, CommandStructureReturnType } from "../schema/command-structure";
 
 type ResponseCallback<T = any> = (response: CommandSocketResponseMessage, timeReceived: number) => void;
 
 type OutstandingRequest<T = any> = {
 	
-	request: CommandSocketRequestMessage<any, T>,
+	request: CommandSocketRequestMessage,
 	responseCallback: ResponseCallback<T>
 	
 };
+
+export type FullCommandSet<CS extends CommandSetStructure> = CS & BuiltinCommandSet;
+
+type ParameterOf<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> =
+	CommandStructureParameterType<CommandInCommandSet<FullCommandSet<CS>, CN>>;
+
+type ReturnTypeOf<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> =
+	CommandStructureReturnType<CommandInCommandSet<FullCommandSet<CS>, CN>>;
 
 /**
  * The underlying 'pure' connection between a client and server or vice-versa.
  *
  * Generic arguments:
- *   LCS - Local CommandSet
- *   RCS - Remote CommandSet
+ *   LCS - Local CommandSetStructure
+ *   RCS - Remote CommandSetStructure
  *
  * @author Trevor Sears <trevorsears.main@gmail.com>
  * @version v0.1.0
  * @since v0.1.0
+ * @param LCS The local command set - must implement {@link CommandSetStructure}.
  */
 export abstract class CommandSocket<
 	LCS extends CommandSetStructure = any,
-	RCS extends CommandSetStructure = any> {
+	RCS extends CommandSetStructure = any> { // TODO [2/21/20 @ 2:56 PM] - Remove default generic types.
 	
+	/**
+	 * The length of the ID generated for each new CommandSocket.
+	 */
 	public static readonly ID_LENGTH: number = 10;
 	
-	private static readonly BUILTIN_COMMANDS: Array<Command<any, any>> = [
+	/**
+	 * An array of {@link Command}s that come built-in with each CommandSocket.
+	 */
+	private static readonly BUILTIN_COMMANDS: Array<Command<any>> = [
 		new IdentifyCommand(),
 		new PingCommand(),
 		new TimedResponseCommand()
 	];
 	
+	/**
+	 * The internal ISocket-conforming instance used internally to communicate with other CommandSockets.
+	 */
 	private socket: ISocket;
 	
+	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private state: CommandSocketState;
 	
+	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private id: string;
 	
+	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private commandRegistry: CommandRegistry<FullCommandSet<LCS>>;
 	
+	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private messageType: ObjectType;
 	
+	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private outstandingRequests: Map<string, OutstandingRequest>;
 	
+	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private events: CommandSocketEvents;
 	
-	public constructor(socket: ISocket,
-					   commandRegistry: CommandRegistry<FullCommandSet<LCS>> = new CommandRegistry<FullCommandSet<LCS>>()) {
+	public constructor(socket: ISocket, commandRegistry: CommandRegistry<LCS> = new CommandRegistry<LCS>()) {
 	
 		this.id = IDUtilities.generateID(CommandSocket.ID_LENGTH);
 		this.socket = socket;
 		this.state = CommandSocketState.CONNECTING;
-		this.commandRegistry = commandRegistry;
+		this.commandRegistry = commandRegistry as unknown as CommandRegistry<FullCommandSet<LCS>>;
 		this.messageType = new ObjectType(new MessageDefinition());
 		this.outstandingRequests = new Map();
 		this.events = new CommandSocketEvents();
@@ -124,21 +143,35 @@ export abstract class CommandSocket<
 	
 	}
 	
-	public async rawRequest<C extends CommandIn<RCS> = CommandIn<RCS>>(command: C, params?: ParamTypeFor<RCS, C>): Promise<CommandSocketResponseMessage> {
+	/**
+	 * Asynchronously executes a command on the remote CommandSocket, returning a Promise that resolves to the entire
+	 * JSON message ({@link CommandSocketResponseMessage}) returned from said CommandSocket.
+	 *
+	 * @param command The string Command identifier of the Command to be executed.
+	 * @param params The parameter(s) to pass to the Command to be executed.
+	 * @return A Promise that resolves to the entire JSON message (CommandSocketResponseMessage) returned from the
+	 * remote CommandSocket.
+	 * @see CommandSocket#invoke
+	 */
+	public async rawRequest<CommandName extends IfAny<RCS, string, CommandNameInCommandSet<FullCommandSet<RCS>>>>(
+		command: CommandName,
+		params: ParameterOf<RCS, CommandName>):
+		Promise<CommandSocketResponseMessage<CommandInCommandSet<FullCommandSet<RCS>, CommandName>>> {
+		
+		type CommandSocketResponse = CommandSocketResponseMessage<CommandInCommandSet<FullCommandSet<RCS>, CommandName>>;
+		type RawRequestPromiseResolveType = PromiseLike<CommandSocketResponse> | CommandSocketResponse;
 		
 		// TODO [11/26/19 @ 2:12 AM] - Add error when invoking on closed CommandSocket.
 		
-		return new Promise<CommandSocketResponseMessage>(
-			async (resolve: (value?: (PromiseLike<CommandSocketResponseMessage> | CommandSocketResponseMessage)) => void,
-				   reject: (reason?: any) => void): Promise<void> => {
+		return new Promise<CommandSocketResponse>(async (resolve: (value?: RawRequestPromiseResolveType) => void, reject: (reason?: any) => void): Promise<void> => {
 				
 				// TODO [11/27/19 @ 1:04 AM] - Respond with an actual error instead, whatever is used in a CommandSocketResponseMessage.
 				if (!this.getState().isUsable()) reject("Cannot perform a request on a non-open CommandSocket.");
 				
-				let request: CommandSocketRequestMessage<ParamTypeFor<RCS, C>, ReturnTypeFor<RCS, C>> =
-					await CommandSocketMessageFactory.createRequestMessage<ParamTypeFor<RCS, C>, ReturnTypeFor<RCS, C>>(
+				let request: CommandSocketRequestMessage<RCS[CommandName]> =
+					await CommandSocketMessageFactory.createRequestMessage<RCS[CommandName]>(
 						command as string,
-						(params === undefined ? null : params),
+						params,
 						this
 					);
 				
@@ -146,7 +179,7 @@ export abstract class CommandSocket<
 					request.meta.correspondenceID,
 					{
 						request,
-						responseCallback: (response: CommandSocketResponseMessage, timeReceived: number): void => {
+						responseCallback: (response: CommandSocketResponseMessage<RCS[CommandName]>, timeReceived: number): void => {
 							
 							response.meta.timeline.responseReceived = timeReceived;
 							
@@ -172,20 +205,30 @@ export abstract class CommandSocket<
 		
 	}
 	
-	public async invoke<C extends CommandIn<RCS> = CommandIn<RCS>>(command: C, params?: ParamTypeFor<RCS, C>): Promise<ReturnTypeFor<RCS, C>> {
+	/**
+	 * Asynchronously executes a command on the remote CommandSocket, returning a Promise that resolves to the return
+	 * value of the executed Command.
+	 *
+	 * @param command The string Command identifier of the Command to be executed.
+	 * @param params The parameter(s) to pass to the Command to be executed.
+	 * @return A Promise which resolves to the return value of the executed Command.
+	 */
+	public async invoke<CommandName extends IfAny<RCS, string, CommandNameInCommandSet<FullCommandSet<RCS>>>>(
+		command: CommandName, params: ParameterOf<RCS, CommandName>): Promise<ReturnTypeOf<RCS, CommandName>> {
 		
 		// TODO [11/26/19 @ 2:12 AM] - Add error when invoking on closed CommandSocket.
 	
-		let response: CommandSocketResponseMessage = await this.rawRequest(command, params);
+		let response: CommandSocketResponseMessage<CommandInCommandSet<FullCommandSet<RCS>, CommandName>> = await this.rawRequest(command, params);
 		
 		if (response.meta.didError) throw response.return;
-		else return response.return;
+		else return response.return as ReturnTypeOf<RCS, CommandName>;
 	
 	}
 	
 	public async ping(): Promise<number> {
 		
-		let response: CommandSocketResponseMessage = await this.rawRequest("commandsocket ping", "Ping!");
+		// FIX-ME [2/21/20 @ 10:12 PM] - The type coercions in the next line are gross
+		let response: CommandSocketResponseMessage<FullCommandSet<RCS>["commandsocket ping"]> = await this.rawRequest("commandsocket ping" as any, "Ping!" as any);
 		
 		return ((response.meta.timeline.responseReceived as number) - response.meta.timeline.requestSent);
 		
@@ -265,7 +308,7 @@ export abstract class CommandSocket<
 			
 			if (this.getCommandRegistry().hasCommand(request.command)) {
 				
-				let returnValue: any = await this.getCommandRegistry().execute(request.command, request.parameters, this);
+				let returnValue: any = await this.getCommandRegistry().execute(request.command as any, request.parameters as any, this);
 				
 				response = await CommandSocketMessageFactory.createResponseMessage(request, returnValue, this, false, timeReceived);
 				

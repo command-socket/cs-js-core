@@ -15,8 +15,7 @@ import { CommandSocket } from "../../../command-socket/command-socket";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class TimedResponseCommand implements Command<
-	TimedResponseCommandStructure, "commandsocket debug timed-response"> {
+export class TimedResponseCommand implements Command<TimedResponseCommandStructure> {
 	
 	public getName(): "commandsocket debug timed-response" {
 		
@@ -24,7 +23,7 @@ export class TimedResponseCommand implements Command<
 		
 	}
 	
-	public async execute(params: TimedResponseCommandStructure["params"],
+	public async execute(params: TimedResponseCommandStructure["parameter"],
 						 context: CommandSocket): Promise<TimedResponseCommandStructure["return"]> {
 		
 		return new Promise<TimedResponseCommandStructure["return"]>(
@@ -38,10 +37,5 @@ export class TimedResponseCommand implements Command<
 	
 }
 
-export interface TimedResponseCommandStructure extends CommandStructure {
-	
-	params: number;
-	
-	return: string;
-	
-}
+export interface TimedResponseCommandStructure
+	extends CommandStructure<number, string, "commandsocket debug timed-response"> { }
