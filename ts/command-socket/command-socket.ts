@@ -64,7 +64,8 @@ type ReturnTypeOf<CS extends CommandSetStructure, CN extends CommandNameInComman
  */
 export abstract class CommandSocket<
 	LCS extends CommandSetStructure = any,
-	RCS extends CommandSetStructure = any> { // TODO [2/21/20 @ 2:56 PM] - Remove default generic types.
+	RCS extends CommandSetStructure = any,
+	M extends {} = {}> { // TODO [2/21/20 @ 2:56 PM] - Remove default generic types.
 	
 	/**
 	 * The length of the ID generated for each new CommandSocket.
@@ -103,7 +104,9 @@ export abstract class CommandSocket<
 	// DOC-ME [2/21/20 @ 4:36 PM] - Documentation required!
 	private events: CommandSocketEvents;
 	
-	public constructor(socket: ISocket, commandRegistry: CommandRegistry<LCS> = new CommandRegistry<LCS>()) {
+	private metadata: Partial<M>;
+	
+	public constructor(socket: ISocket, commandRegistry: CommandRegistry<LCS> = new CommandRegistry<LCS>(), metadata: Partial<M> = {}) {
 	
 		this.id = IDUtilities.generateID(CommandSocket.ID_LENGTH);
 		this.socket = socket;
@@ -112,6 +115,7 @@ export abstract class CommandSocket<
 		this.messageType = new ObjectType(new MessageDefinition());
 		this.outstandingRequests = new Map();
 		this.events = new CommandSocketEvents();
+		this.metadata = metadata;
 		
 		this.socket.getEvents().OPEN.subscribe((event: { source: ISocket }): void => {
 			
@@ -365,6 +369,12 @@ export abstract class CommandSocket<
 	
 		return this.id;
 	
+	}
+	
+	public getMetadata(): Partial<M> {
+		
+		return this.metadata;
+		
 	}
 	
 	public getCommandRegistry(): CommandRegistry<LCS & BuiltinCommandSet> {
