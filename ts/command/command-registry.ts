@@ -4,19 +4,22 @@
  *	Project: @command-socket/core
  */
 
-import { Command } from "./command";
 import { CommandSocketCommandNotFoundError } from "../error/command-socket-command-not-found-error";
 import { CommandSocket } from "../command-socket/command-socket";
-import { CommandInCommandSet, CommandNameInCommandSet, CommandSetStructure } from "../schema/command-set-structure";
+import { CommandStructureInCommandSet, CommandNameInCommandSet, CommandSetStructure } from "../schema/command/command-set-structure";
 import { IfAny } from "../util/any-types";
 import {
 	CommandStructureParameterType,
 	CommandStructureReturnType
-} from "../schema/command-structure";
+} from "../schema/command/command-structure";
+import { CommandExecutableFunction } from "../schema/command/command-executable-function";
+import { Command } from "../schema/command/command";
 
-type ExecuteFunctionType<CS extends CommandSetStructure, CN extends keyof CS> =
-	(params: CommandStructureParameterType<CommandInCommandSet<CS, CN>>,
-	 context: CommandSocket) => Promise<CommandStructureReturnType<CommandInCommandSet<CS, CN>>>;
+type CommandMapKey<CommandSet extends CommandSetStructure> = CommandNameInCommandSet<CommandSet>;
+
+type CommandMapValue<CommandSet extends CommandSetStructure,
+	CommandName extends CommandNameInCommandSet<CommandSet> = CommandNameInCommandSet<CommandSet>> =
+	CommandExecutableFunction<CommandStructureInCommandSet<CommandSet, CommandName>>;
 
 /**
  * A registry of {@link Command}s, accessible via their string identifiers.
@@ -28,53 +31,35 @@ type ExecuteFunctionType<CS extends CommandSetStructure, CN extends keyof CS> =
 export class CommandRegistry<CommandSet extends CommandSetStructure = any> {
 	
 	/**
-	 * A map from {@link Command} identifiers to Commands.
+	 * A map from Command identifiers to {@link Command}s.
 	 */
-	private commandMap: Map<string, Command<any>>;
+	private commandMap: Map<CommandMapKey<CommandSet>, CommandMapValue<CommandSet>>;
 	
 	/**
-	 * Initializes a new CommandRegistry with the provided list of {@link Command}s.
-	 *
-	 * @param commands The array of Commands to include in the newly initialized CommandRegistry.
+	 * Initializes a new CommandRegistry.
 	 */
-	public constructor(...commands: Array<Command<CommandInCommandSet<CommandSet>>>) {
+	public constructor() {
 	
 		this.commandMap = new Map();
-		
-		this.addCommands(...commands);
 	
 	}
 	
-	/**
-	 * Adds one or more {@link Command}s to this CommandRegistry instance.
-	 *
-	 * @param commands The Command(s) to add to this CommandRegistry instance.
-	 */
-	public addCommands(...commands: Array<Command<CommandInCommandSet<CommandSet>>>): void {
+	// DOC-ME [2/22/20 @ 1:55 PM] - Documentation required!
+	protected static normalizeCommand<CommandSet extends CommandSetStructure>(
+		command: Command<CommandStructureInCommandSet<CommandSet>>): CommandExecutableFunction<CommandStructureInCommandSet<CommandSet>> {
+		
+		if (typeof command === "function") return command;
+		else return command.execute;
+		
+	}
+	
+	// DOC-ME [2/22/20 @ 2:59 PM] - Documentation required!
+	public addCommand<CommandName extends CommandNameInCommandSet<CommandSet>>(
+		commandName: CommandName, command: Command<CommandStructureInCommandSet<CommandSet, CommandName>>): void {
 		
 		// TODO [1/16/20 @ 8:25 AM] - Add in handling for erroring on duplicated command names.
 		
-		for (let command of commands) {
-			
-			this.commandMap.set(command.getName(), command);
-			
-		}
-		
-	}
-	
-	// DOC-ME [2/21/20 @ 9:55 PM] - Documentation required!
-	public addInlineCommand<CommandName extends IfAny<CommandSet, string, CommandNameInCommandSet<CommandSet>>>(
-		commandName: CommandName, implementation: ExecuteFunctionType<CommandSet, CommandName>): void {
-		
-		let command: Command<CommandInCommandSet<CommandSet>> = new class {
-			
-			public getName: () => CommandName = (): CommandName => commandName;
-			
-			public execute: ExecuteFunctionType<CommandSet, CommandName> = implementation;
-			
-		} as unknown as Command<CommandInCommandSet<CommandSet>>;
-		
-		this.addCommands(command);
+		this.commandMap.set(commandName, CommandRegistry.normalizeCommand<CommandSet>(command));
 		
 	}
 	
@@ -86,7 +71,7 @@ export class CommandRegistry<CommandSet extends CommandSetStructure = any> {
 	 */
 	public hasCommand(command: string): boolean {
 		
-		return this.commandMap.has(command);
+		return this.commandMap.has(command as CommandMapKey<CommandSet>);
 		
 	}
 	
@@ -99,26 +84,26 @@ export class CommandRegistry<CommandSet extends CommandSetStructure = any> {
 	 * undefined.
 	 * @see CommandRegistry#hasCommand
 	 */
-	public getCommand<C extends IfAny<CommandSet, string, CommandNameInCommandSet<CommandSet>>>(command: C):
-		IfAny<CommandSet, Command<any>, Command<CommandSet[C]>> {
+	public getCommand<CommandName extends CommandNameInCommandSet<CommandSet>>(command: CommandName):
+		IfAny<CommandSet, CommandExecutableFunction<any> | undefined, CommandExecutableFunction<CommandStructureInCommandSet<CommandSet, CommandName>>> {
 		
-		return this.commandMap.get(command as string) as (IfAny<CommandSet, Command<any>, Command<CommandSet[C]>>);
+		return this.commandMap.get(command) as
+			IfAny<CommandSet, CommandExecutableFunction<any> | undefined, CommandExecutableFunction<CommandStructureInCommandSet<CommandSet, CommandName>>>;
 		
 	}
 	
 	// DOC-ME [1/13/20 @ 12:37 PM] - Documentation required!
-	public async execute<CommandName extends IfAny<CommandSet, string, CommandNameInCommandSet<CommandSet>>>(
-		commandName: CommandName, params: CommandStructureParameterType<CommandInCommandSet<CommandSet, CommandName>>,
+	public async execute<CommandName extends CommandNameInCommandSet<CommandSet>>(
+		commandName: CommandName, params: CommandStructureParameterType<CommandStructureInCommandSet<CommandSet, CommandName>>,
 		context: CommandSocket):
-		Promise<IfAny<CommandSet, any, CommandStructureReturnType<CommandInCommandSet<CommandSet, CommandName>>>> {
+		Promise<IfAny<CommandSet, any, CommandStructureReturnType<CommandStructureInCommandSet<CommandSet, CommandName>>>> {
 		
 		if (this.hasCommand(commandName as string)) {
 			
-			let command: Command<CommandSet[CommandName]> =
-				this.commandMap.get(commandName as string) as Command<CommandSet[CommandName]>;
+			let command: CommandExecutableFunction<CommandStructureInCommandSet<CommandSet, CommandName>> =
+				this.commandMap.get(commandName) as CommandExecutableFunction<CommandStructureInCommandSet<CommandSet, CommandName>>;
 			
-			return (await command.execute(params, context)) as unknown as
-				IfAny<CommandSet, any, CommandStructureReturnType<CommandSet[CommandName]>>;
+			return await command(params, context) as unknown as IfAny<CommandSet, any, CommandStructureReturnType<CommandStructureInCommandSet<CommandSet, CommandName>>>;
 			
 		} else throw new CommandSocketCommandNotFoundError(commandName as string);
 		

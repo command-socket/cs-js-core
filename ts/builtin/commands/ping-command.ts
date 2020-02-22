@@ -8,8 +8,8 @@ import {
 	CommandStructure,
 	CommandStructureParameterType,
 	CommandStructureReturnType
-} from "../../schema/command-structure";
-import { Command } from "../../command/command";
+} from "../../schema/command/command-structure";
+import { FormalCommand } from "../../schema/command/formal-command";
 import { CommandSocket } from "../../command-socket/command-socket";
 
 /**
@@ -19,13 +19,7 @@ import { CommandSocket } from "../../command-socket/command-socket";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class PingCommand implements Command<PingCommandStructure> {
-	
-	public getName(): "commandsocket ping" {
-		
-		return "commandsocket ping";
-		
-	}
+export class PingCommand implements FormalCommand<PingCommandStructure> {
 	
 	public async execute(params: CommandStructureParameterType<PingCommandStructure>,
 				   context: CommandSocket): Promise<CommandStructureReturnType<PingCommandStructure>> {
@@ -37,4 +31,4 @@ export class PingCommand implements Command<PingCommandStructure> {
 }
 
 export interface PingCommandStructure
-	extends CommandStructure<"Ping!", "Pong!", "commandsocket ping"> { }
+	extends CommandStructure<"Ping!", "Pong!"> { }

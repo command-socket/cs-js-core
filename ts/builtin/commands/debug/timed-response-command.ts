@@ -4,8 +4,12 @@
  *	Project: CommandSocket - Core
  */
 
-import { Command } from "../../../command/command";
-import { CommandStructure } from "../../../schema/command-structure";
+import { FormalCommand, FormalCommandResolveType } from "../../../schema/command/formal-command";
+import {
+	CommandStructure,
+	CommandStructureParameterType,
+	CommandStructureReturnType
+} from "../../../schema/command/command-structure";
 import { CommandSocket } from "../../../command-socket/command-socket";
 
 /**
@@ -15,19 +19,13 @@ import { CommandSocket } from "../../../command-socket/command-socket";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class TimedResponseCommand implements Command<TimedResponseCommandStructure> {
+export class TimedResponseCommand implements FormalCommand<TimedResponseCommandStructure> {
 	
-	public getName(): "commandsocket debug timed-response" {
+	public async execute(params: CommandStructureParameterType<TimedResponseCommandStructure>,
+						 context: CommandSocket): Promise<CommandStructureReturnType<TimedResponseCommandStructure>> {
 		
-		return "commandsocket debug timed-response";
-		
-	}
-	
-	public async execute(params: TimedResponseCommandStructure["parameter"],
-						 context: CommandSocket): Promise<TimedResponseCommandStructure["return"]> {
-		
-		return new Promise<TimedResponseCommandStructure["return"]>(
-			(resolve: (value?: (PromiseLike<TimedResponseCommandStructure["return"]> | TimedResponseCommandStructure["return"])) => void): void => {
+		return new Promise<CommandStructureReturnType<TimedResponseCommandStructure>>(
+			(resolve: (value?: FormalCommandResolveType<TimedResponseCommandStructure>) => void): void => {
 			
 			setTimeout(() => resolve("Waited " + params + "ms and responded."), params);
 			
@@ -38,4 +36,4 @@ export class TimedResponseCommand implements Command<TimedResponseCommandStructu
 }
 
 export interface TimedResponseCommandStructure
-	extends CommandStructure<number, string, "commandsocket debug timed-response"> { }
+	extends CommandStructure<number, string> { }

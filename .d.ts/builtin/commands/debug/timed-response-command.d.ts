@@ -1,9 +1,8 @@
-import { Command } from "../../../command/command";
-import { CommandStructure } from "../../../schema/command-structure";
+import { FormalCommand } from "../../../schema/command/formal-command";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../../../schema/command/command-structure";
 import { CommandSocket } from "../../../command-socket/command-socket";
-export declare class TimedResponseCommand implements Command<TimedResponseCommandStructure> {
-    getName(): "commandsocket debug timed-response";
-    execute(params: TimedResponseCommandStructure["parameter"], context: CommandSocket): Promise<TimedResponseCommandStructure["return"]>;
+export declare class TimedResponseCommand implements FormalCommand<TimedResponseCommandStructure> {
+    execute(params: CommandStructureParameterType<TimedResponseCommandStructure>, context: CommandSocket): Promise<CommandStructureReturnType<TimedResponseCommandStructure>>;
 }
-export interface TimedResponseCommandStructure extends CommandStructure<number, string, "commandsocket debug timed-response"> {
+export interface TimedResponseCommandStructure extends CommandStructure<number, string> {
 }

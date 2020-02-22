@@ -5,7 +5,8 @@
  */
 
 import { CommandStructure } from "./command-structure";
-import { KnownKeys } from "../util/known-keys";
+import { KnownKeys } from "../../util/known-keys";
+import { IfAny } from "../../util/any-types";
 
 /**
  * An interface representing a set of commands.
@@ -24,13 +25,7 @@ export interface CommandSetStructure {
 
 }
 
-// export type CommandNameInCommandSet<CS extends CommandSetStructure> = IfAny<CS, string, keyof CS & KnownKeys<CS>>;
+export type CommandNameInCommandSet<CS extends CommandSetStructure> = IfAny<CS, string, keyof CS & KnownKeys<CS>>;
 
-export type CommandNameInCommandSet<CS extends CommandSetStructure> = keyof CS & KnownKeys<CS>;
-
-export type CommandInCommandSet<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> = CS[CN];
-
-export type CommandSetWithCommand<C extends CommandStructure> =
-	C extends CommandStructure<infer P, infer R, infer N> ?
-		Record<N, C> :
-		never;
+export type CommandStructureInCommandSet<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> =
+	IfAny<CS, CommandStructure<any>, CS[CN]>;

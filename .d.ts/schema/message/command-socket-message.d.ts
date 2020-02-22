@@ -1,5 +1,5 @@
 import { CommandSocketIdentity } from "../command-socket-identity";
-import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command-structure";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command/command-structure";
 export declare const CORRESPONDENCE_ID_LENGTH: number;
 export interface CommandSocketMessage<Command extends CommandStructure = any> {
     readonly command: string;

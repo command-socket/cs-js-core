@@ -1,8 +1,8 @@
-import { Command } from "../../../command/command";
-import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../../../schema/command-structure";
+import { FormalCommand } from "../../../schema/command/formal-command";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../../../schema/command/command-structure";
 import { CommandSocket } from "../../../command-socket/command-socket";
 import { TestCommandSet } from "./test-command-set";
-export declare class AddCommand implements Command<AddCommandStructure> {
+export declare class AddCommand implements FormalCommand<AddCommandStructure> {
     getName(): "sum";
     execute(params: CommandStructureParameterType<TestCommandSet["sum"]>, context: CommandSocket): Promise<CommandStructureReturnType<TestCommandSet["sum"]>>;
 }

@@ -4,13 +4,13 @@
  *	Project: @command-socket/core
  */
 
-import { Command } from "../../command/command";
+import { FormalCommand } from "../../schema/command/formal-command";
 import { CommandSocket } from "../../command-socket/command-socket";
 import {
 	CommandStructure,
 	CommandStructureParameterType,
 	CommandStructureReturnType
-} from "../../schema/command-structure";
+} from "../../schema/command/command-structure";
 import { CommandSocketIdentity } from "../../schema/command-socket-identity";
 
 /**
@@ -20,13 +20,7 @@ import { CommandSocketIdentity } from "../../schema/command-socket-identity";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class IdentifyCommand implements Command<IdentifyCommandStructure> {
-	
-	public getName(): "commandsocket identify" {
-		
-		return "commandsocket identify";
-		
-	}
+export class IdentifyCommand implements FormalCommand<IdentifyCommandStructure> {
 	
 	public async execute(
 		params: CommandStructureParameterType<IdentifyCommandStructure>, context: CommandSocket):
@@ -41,4 +35,4 @@ export class IdentifyCommand implements Command<IdentifyCommandStructure> {
 }
 
 export interface IdentifyCommandStructure
-	extends CommandStructure<void, CommandSocketIdentity, "commandsocket identify"> { }
+	extends CommandStructure<void, CommandSocketIdentity> { }

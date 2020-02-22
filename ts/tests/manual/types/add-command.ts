@@ -4,12 +4,12 @@
  *	Project: @command-socket/core
  */
 
-import { Command } from "../../../command/command";
+import { FormalCommand } from "../../../schema/command/formal-command";
 import {
 	CommandStructure,
 	CommandStructureParameterType,
 	CommandStructureReturnType
-} from "../../../schema/command-structure";
+} from "../../../schema/command/command-structure";
 import { CommandSocket } from "../../../command-socket/command-socket";
 import { TestCommandSet } from "./test-command-set";
 
@@ -20,7 +20,7 @@ import { TestCommandSet } from "./test-command-set";
  * @version v0.1.0
  * @since v0.1.0
  */
-export class AddCommand implements Command<AddCommandStructure> {
+export class AddCommand implements FormalCommand<AddCommandStructure> {
 	
 	public getName(): "sum" {
 		

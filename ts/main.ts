@@ -24,8 +24,8 @@ export {
 } from "./socket/i-socket";
 
 // Schema-related classes.
-export { CommandSetStructure } from "./schema/command-set-structure";
-export { CommandStructure } from "./schema/command-structure";
+export { CommandSetStructure } from "./schema/command/command-set-structure";
+export { CommandStructure } from "./schema/command/command-structure";
 export { CommandSocketIdentity } from "./schema/command-socket-identity";
 	
 	// Message schema-related classes.
@@ -49,7 +49,7 @@ export { CommandSocketMalformedMessageError } from "./error/command-socket-malfo
 export { CommandSocketMisplacedResponseError } from "./error/command-socket-misplaced-response-error";
 
 // Command structure-related classes
-export { Command } from "./command/command";
+export { FormalCommand } from "./schema/command/formal-command";
 export { CommandRegistry } from "./command/command-registry";
 
 // Built-in commands and etc.

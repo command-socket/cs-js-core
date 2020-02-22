@@ -4,8 +4,11 @@
  *	Project: @command-socket/core
  */
 
-import { CommandStructure, CommandStructureName, CommandStructureParameterType, CommandStructureReturnType } from "../schema/command-structure";
-import { CommandSocket } from "../command-socket/command-socket";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "./command-structure";
+import { CommandSocket } from "../../command-socket/command-socket";
+
+export type FormalCommandResolveType<C extends CommandStructure> =
+	PromiseLike<CommandStructureReturnType<C>> | CommandStructureReturnType<C>;
 
 /**
  * An interface representing the basic form of an executable command.
@@ -14,14 +17,7 @@ import { CommandSocket } from "../command-socket/command-socket";
  * @version v0.1.0
  * @since v0.1.0
  */
-export interface Command<C extends CommandStructure> {
-	
-	/**
-	 * Returns the name of the Command.
-	 *
-	 * @return the name of the Command.
-	 */
-	getName(): CommandStructureName<C>;
+export interface FormalCommand<C extends CommandStructure> {
 	
 	/**
 	 * Executes the Command with the provided parameters and within the provided context, returning the resulting value.

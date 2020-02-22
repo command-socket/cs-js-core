@@ -1,4 +1,4 @@
-import { CommandInCommandSet, CommandNameInCommandSet, CommandSetStructure } from "../schema/command-set-structure";
+import { CommandStructureInCommandSet, CommandNameInCommandSet, CommandSetStructure } from "../schema/command/command-set-structure";
 import { CommandRegistry } from "../command/command-registry";
 import { CommandSocketRequestMessage, CommandSocketResponseMessage } from "../schema/message/command-socket-message";
 import { CommandSocketIdentity } from "../schema/command-socket-identity";
@@ -6,11 +6,10 @@ import { BuiltinCommandSet } from "../builtin/builtin-command-set";
 import { ISocket } from "../socket/i-socket";
 import { CommandSocketEvents } from "./command-socket-events";
 import { CommandSocketState } from "./command-socket-state";
-import { IfAny } from "../util/any-types";
-import { CommandStructureParameterType, CommandStructureReturnType } from "../schema/command-structure";
+import { CommandStructureParameterType, CommandStructureReturnType } from "../schema/command/command-structure";
 export declare type FullCommandSet<CS extends CommandSetStructure> = CS & BuiltinCommandSet;
-declare type ParameterOf<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> = CommandStructureParameterType<CommandInCommandSet<FullCommandSet<CS>, CN>>;
-declare type ReturnTypeOf<CS extends CommandSetStructure, CN extends keyof CS = CommandNameInCommandSet<CS>> = CommandStructureReturnType<CommandInCommandSet<FullCommandSet<CS>, CN>>;
+declare type ParameterOf<CS extends CommandSetStructure, CN extends CommandNameInCommandSet<CS> = CommandNameInCommandSet<CS>> = CommandStructureParameterType<CommandStructureInCommandSet<CS, CN>>;
+declare type ReturnTypeOf<CS extends CommandSetStructure, CN extends CommandNameInCommandSet<CS> = CommandNameInCommandSet<CS>> = CommandStructureReturnType<CommandStructureInCommandSet<CS, CN>>;
 export declare abstract class CommandSocket<LCS extends CommandSetStructure = any, RCS extends CommandSetStructure = any> {
     static readonly ID_LENGTH: number;
     private static readonly BUILTIN_COMMANDS;
@@ -22,8 +21,8 @@ export declare abstract class CommandSocket<LCS extends CommandSetStructure = an
     private outstandingRequests;
     private events;
     constructor(socket: ISocket, commandRegistry?: CommandRegistry<LCS>);
-    rawRequest<CommandName extends IfAny<RCS, string, CommandNameInCommandSet<FullCommandSet<RCS>>>>(command: CommandName, params: ParameterOf<RCS, CommandName>): Promise<CommandSocketResponseMessage<CommandInCommandSet<FullCommandSet<RCS>, CommandName>>>;
-    invoke<CommandName extends IfAny<RCS, string, CommandNameInCommandSet<FullCommandSet<RCS>>>>(command: CommandName, params: ParameterOf<RCS, CommandName>): Promise<ReturnTypeOf<RCS, CommandName>>;
+    rawRequest<CommandName extends CommandNameInCommandSet<FullCommandSet<RCS>>>(command: CommandName, params: ParameterOf<FullCommandSet<RCS>, CommandName>): Promise<CommandSocketResponseMessage<CommandStructureInCommandSet<FullCommandSet<RCS>, CommandName>>>;
+    invoke<CommandName extends CommandNameInCommandSet<FullCommandSet<RCS>>>(command: CommandName, params: ParameterOf<FullCommandSet<RCS>, CommandName>): Promise<ReturnTypeOf<FullCommandSet<RCS>, CommandName>>;
     ping(): Promise<number>;
     close(): Promise<void>;
     protected handleMessage(data: any): void;

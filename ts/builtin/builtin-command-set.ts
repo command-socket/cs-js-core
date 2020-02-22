@@ -4,7 +4,7 @@
  *	Project: @command-socket/core
  */
 
-import { CommandSetStructure } from "../schema/command-set-structure";
+import { CommandSetStructure } from "../schema/command/command-set-structure";
 import { PingCommandStructure } from "./commands/ping-command";
 import { IdentifyCommandStructure } from "./commands/identify-command";
 import { TimedResponseCommandStructure } from "./commands/debug/timed-response-command";
@@ -18,8 +18,6 @@ import { TimedResponseCommandStructure } from "./commands/debug/timed-response-c
  */
 export interface BuiltinCommandSet extends CommandSetStructure {
 
-	// "commandsocket handshake": any;
-	
 	"commandsocket identify": IdentifyCommandStructure;
 	
 	"commandsocket ping": PingCommandStructure;

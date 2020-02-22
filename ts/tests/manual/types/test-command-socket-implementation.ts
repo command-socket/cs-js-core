@@ -5,7 +5,7 @@
  */
 
 import { CommandSocket } from "../../../command-socket/command-socket";
-import { CommandSetStructure } from "../../../schema/command-set-structure";
+import { CommandSetStructure } from "../../../schema/command/command-set-structure";
 import { ISocket } from "../../../socket/i-socket";
 
 /**

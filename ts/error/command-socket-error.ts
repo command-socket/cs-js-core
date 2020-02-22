@@ -10,7 +10,7 @@ import {
 } from "../schema/message/command-socket-message";
 import { CommandSocketMessageFactory } from "../schema/message/command-socket-message-factory";
 import { CommandSocket } from "../command-socket/command-socket";
-import { CommandStructure } from "../schema/command-structure";
+import { CommandStructure } from "../schema/command/command-structure";
 
 /**
  * An {@link Error} stemming from any action around or related to the execution of a command or an attempt thereof.

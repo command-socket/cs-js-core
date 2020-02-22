@@ -13,7 +13,7 @@ import { CommandSocketIdentity } from "../command-socket-identity";
 import * as IDUtilities from "../../util/id-utilities";
 import { CommandSocketError } from "../../error/command-socket-error";
 import { CommandSocket } from "../../command-socket/command-socket";
-import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command-structure";
+import { CommandStructure, CommandStructureParameterType, CommandStructureReturnType } from "../command/command-structure";
 
 /**
  * A factory/utility class for creating new {@link CommandSocketMessage}s.

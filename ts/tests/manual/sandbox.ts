@@ -10,7 +10,7 @@ import { TestCommandSet } from "./types/test-command-set";
 
 let cs: CommandSocket<TestCommandSet, TestCommandSet> = new TestCommandSocketImplementation();
 
-cs.getCommandRegistry().addInlineCommand("add", async (params: number[]): Promise<number> => {
+cs.getCommandRegistry().addCommand("add", async (params: number[]): Promise<number> => {
 	
 	return 1;
 	
