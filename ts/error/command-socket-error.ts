@@ -32,7 +32,7 @@ export class CommandSocketError extends Error {
 	public async toMessage<C extends CommandStructure>(request: CommandSocketRequestMessage<C>,
 									   context: CommandSocket): Promise<CommandSocketResponseMessage<C>> {
 		
-		return await CommandSocketMessageFactory.createResponseMessage(request, this, context);
+		return await CommandSocketMessageFactory.createResponseMessage(request, this, context, true);
 		
 	}
 	
